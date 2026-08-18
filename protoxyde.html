@@ -366,54 +366,64 @@
     </div>
   </div>
 
-  <script>
-    const UNIT_PRICE = 85.00;
-    const qtyInput = document.getElementById('quantite');
-    const decreaseBtn = document.getElementById('decrease');
-    const increaseBtn = document.getElementById('increase');
-    const totalPriceEl = document.getElementById('totalPrice');
-    const addBtn = document.getElementById('addToCart');
-    const addLabel = document.getElementById('addToCartLabel');
+<script src="cart.js"></script>
+<script>
+  const UNIT_PRICE = 85.00;
+  const qtyInput = document.getElementById('quantite');
+  const decreaseBtn = document.getElementById('decrease');
+  const increaseBtn = document.getElementById('increase');
+  const totalPriceEl = document.getElementById('totalPrice');
+  const addBtn = document.getElementById('addToCart');
+  const addLabel = document.getElementById('addToCartLabel');
 
-    function formatEUR(amount) {
-      return amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-    }
+  function formatEUR(amount) {
+    return amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+  }
 
-    function clampQty(value) {
-      let n = parseInt(value, 10);
-      if (isNaN(n) || n < 1) n = 1;
-      return n;
-    }
+  function clampQty(value) {
+    let n = parseInt(value, 10);
+    if (isNaN(n) || n < 1) n = 1;
+    return n;
+  }
 
-    function updateTotal() {
-      const qty = clampQty(qtyInput.value);
-      qtyInput.value = qty;
-      totalPriceEl.textContent = formatEUR(UNIT_PRICE * qty);
-    }
+  function updateTotal() {
+    const qty = clampQty(qtyInput.value);
+    qtyInput.value = qty;
+    totalPriceEl.textContent = formatEUR(UNIT_PRICE * qty);
+  }
 
-    decreaseBtn.addEventListener('click', () => {
-      qtyInput.value = clampQty(qtyInput.value) - 1;
-      updateTotal();
-    });
-
-    increaseBtn.addEventListener('click', () => {
-      qtyInput.value = clampQty(qtyInput.value) + 1;
-      updateTotal();
-    });
-
-    qtyInput.addEventListener('input', updateTotal);
-
-    addBtn.addEventListener('click', () => {
-      addBtn.classList.add('added');
-      addLabel.textContent = 'Ajouté ✓';
-      setTimeout(() => {
-        addBtn.classList.remove('added');
-        addLabel.textContent = 'Ajouter au panier';
-      }, 1500);
-    });
-
+  decreaseBtn.addEventListener('click', () => {
+    qtyInput.value = clampQty(qtyInput.value) - 1;
     updateTotal();
-  </script>
+  });
 
+  increaseBtn.addEventListener('click', () => {
+    qtyInput.value = clampQty(qtyInput.value) + 1;
+    updateTotal();
+  });
+
+  qtyInput.addEventListener('input', updateTotal);
+
+  addBtn.addEventListener('click', () => {
+    const qty = clampQty(qtyInput.value);
+
+    addToCart({
+      id: 7,
+      nom: 'protoxyde d azote ',   
+      prix: UNIT_PRICE,
+      image: 'images/protoxydeAzote/protoxydedazote.webp', 
+      quantite: qty
+    });
+
+    addBtn.classList.add('added');
+    addLabel.textContent = 'Ajouté ✓';
+    setTimeout(() => {
+      addBtn.classList.remove('added');
+      addLabel.textContent = 'Ajouter au panier';
+    }, 1500);
+  });
+
+  updateTotal();
+</script>
 </body>
 </html>
