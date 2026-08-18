@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Achat - Protoxyde d'azote</title>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --ink: #1a1d23;
+    --ink-soft: #6b7280;
+    --accent: #4f46e5;
+    --accent-dark: #4338ca;
+    --accent-soft: #eef2ff;
+    --border: #e5e7eb;
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+    --shadow-hover: 0 16px 40px rgba(17, 24, 39, 0.14);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(79, 70, 229, 0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(79, 70, 229, 0.06), transparent 40%),
+      var(--bg);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-width: 900px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .card:hover { box-shadow: var(--shadow-hover); }
+
+  .media {
+    position: relative;
+    background: linear-gradient(160deg, var(--accent-soft), #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .media img {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    border-radius: 12px;
+    filter: drop-shadow(0 12px 24px rgba(79, 70, 229, 0.18));
+    transition: transform 0.35s ease;
+  }
+
+  .media:hover img { transform: scale(1.04) rotate(-1deg); }
+
+  .badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .content {
+    padding: 40px 40px 40px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .description {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .price {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .unit {
+    font-size: 14px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .stepper button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .stepper button:hover { background: var(--accent-soft); }
+  .stepper button:active { background: #e0e0fb; }
+
+  .stepper input {
+    width: 56px;
+    height: 42px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    -moz-appearance: textfield;
+  }
+
+  .stepper input::-webkit-outer-spin-button,
+  .stepper input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .stepper input:focus { outline: none; }
+
+  .total-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--accent-soft);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .total-row span:first-child {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .total-row span:last-child {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent-dark);
+  }
+
+  .add-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 14px 20px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .add-btn:hover { background: var(--accent-dark); }
+  .add-btn:active { transform: scale(0.98); }
+
+  .add-btn.added { background: #16a34a; }
+
+  .add-btn svg { width: 18px; height: 18px; }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+
+  .meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta svg {
+    width: 15px;
+    height: 15px;
+    color: var(--accent);
+  }
+.retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.retour a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4f46e5;
+  padding: 10px 18px;
+  border-radius: 999px;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.retour a::before {
+  content: "←";
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.retour a:hover {
+  background-color: #4338ca;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+  transform: translateY(-1px);
+}
+
+.retour a:hover::before {
+  transform: translateX(-3px);
+}
+
+.retour a:active {
+  transform: translateY(0);
+}
+
+  @media (max-width: 720px) {
+    .card { grid-template-columns: 1fr; }
+    .media { padding: 28px; }
+    .content { padding: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="retour">
+  <a href="index.html">Retour à l'accueil</a>
+</div>
+  <div class="card">
+    <div class="media">
+      <span class="badge">Format pro</span>
+      <img
+        src="images/protoxydeAzote/protoxydedazote.webp"
+        alt="Protoxyde d'azote"
+      >
+    </div>
+
+    <div class="content">
+      <div class="eyebrow">Protoxyde d'azote</div>
+      <h1>Bouteille 3 kg</h1>
+      <p class="description">
+        Bouteille de protoxyde d'azote de qualité professionnelle, conditionnée en 3 kg.
+        Idéale pour se sentire dans un état d'euphorie et de relaxation.
+      </p>
+
+      <div class="price-row">
+        <span class="price" id="unitPriceDisplay">85,00 €</span>
+        <span class="unit">/ 3 kg</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <label for="quantite">Quantité</label>
+        <div class="stepper">
+          <button type="button" id="decrease" aria-label="Diminuer la quantité">−</button>
+          <input type="number" id="quantite" min="1" value="1" inputmode="numeric">
+          <button type="button" id="increase" aria-label="Augmenter la quantité">+</button>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span>Total</span>
+        <span id="totalPrice">85,00 €</span>
+      </div>
+
+      <button type="button" class="add-btn" id="addToCart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span id="addToCartLabel">Ajouter au panier</span>
+      </button>
+
+      <div class="meta">
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          Livraison rapide / 24 h
+        </span>
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Paiement sécurisé
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const UNIT_PRICE = 85.00;
+    const qtyInput = document.getElementById('quantite');
+    const decreaseBtn = document.getElementById('decrease');
+    const increaseBtn = document.getElementById('increase');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const addBtn = document.getElementById('addToCart');
+    const addLabel = document.getElementById('addToCartLabel');
+
+    function formatEUR(amount) {
+      return amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    }
+
+    function clampQty(value) {
+      let n = parseInt(value, 10);
+      if (isNaN(n) || n < 1) n = 1;
+      return n;
+    }
+
+    function updateTotal() {
+      const qty = clampQty(qtyInput.value);
+      qtyInput.value = qty;
+      totalPriceEl.textContent = formatEUR(UNIT_PRICE * qty);
+    }
+
+    decreaseBtn.addEventListener('click', () => {
+      qtyInput.value = clampQty(qtyInput.value) - 1;
+      updateTotal();
+    });
+
+    increaseBtn.addEventListener('click', () => {
+      qtyInput.value = clampQty(qtyInput.value) + 1;
+      updateTotal();
+    });
+
+    qtyInput.addEventListener('input', updateTotal);
+
+    addBtn.addEventListener('click', () => {
+      addBtn.classList.add('added');
+      addLabel.textContent = 'Ajouté ✓';
+      setTimeout(() => {
+        addBtn.classList.remove('added');
+        addLabel.textContent = 'Ajouter au panier';
+      }, 1500);
+    });
+
+    updateTotal();
+  </script>
+
+</body>
+</html>

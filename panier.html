@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon panier</title>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --ink: #1a1d23;
+    --ink-soft: #6b7280;
+    --accent: #4f46e5;
+    --accent-dark: #4338ca;
+    --accent-soft: #eef2ff;
+    --border: #e5e7eb;
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 40px 16px;
+    background: var(--bg);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 760px;
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-size: 26px;
+    margin: 0;
+  }
+
+  .retour a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #4f46e5;
+    padding: 10px 18px;
+    border-radius: 999px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    transition: background-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .retour a::before { content: "←"; }
+  .retour a:hover { background-color: var(--accent-dark); transform: translateY(-1px); }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 72px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .item:last-child { border-bottom: none; }
+
+  .item img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    padding: 6px;
+  }
+
+  .item-name { font-weight: 700; font-size: 15px; }
+  .item-price { font-size: 13px; color: var(--ink-soft); }
+
+  .qty-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 36px;
+  }
+
+  .qty-stepper button {
+    width: 32px;
+    height: 100%;
+    border: none;
+    background: var(--surface);
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .qty-stepper button:hover { background: var(--accent-soft); }
+
+  .qty-stepper span {
+    width: 32px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .item-total {
+    font-weight: 700;
+    font-size: 15px;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: #dc2626;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    margin-top: 4px;
+  }
+
+  .summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--accent-soft);
+  }
+
+  .summary .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  .summary .total {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent-dark);
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .btn {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-dark); }
+
+  .btn-secondary { background: #fff; color: var(--ink); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: #f3f4f6; }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+
+  .empty svg {
+    width: 56px;
+    height: 56px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-bar">
+      <h1>Mon panier</h1>
+      <div class="retour"><a href="index.html">Retour à l'accueil</a></div>
+    </div>
+
+    <div class="card" id="cartCard"></div>
+  </div>
+
+  <script src="cart.js"></script>
+  <script>
+    function formatEUR(amount) {
+      return amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    }
+
+    function render() {
+      const cart = getCart();
+      const cartCard = document.getElementById('cartCard');
+
+      if (cart.length === 0) {
+        cartCard.innerHTML = `
+          <div class="empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <p>Ton panier est vide.</p>
+          </div>`;
+        return;
+      }
+
+      const itemsHtml = cart.map(item => `
+        <div class="item" data-id="${item.id}">
+          <img src="${item.image}" alt="${item.nom}">
+          <div>
+            <div class="item-name">${item.nom}</div>
+            <div class="item-price">${formatEUR(item.prix)} / unité</div>
+            <button class="remove-btn" data-action="remove" data-id="${item.id}">Supprimer</button>
+          </div>
+          <div class="qty-stepper">
+            <button data-action="decrease" data-id="${item.id}">−</button>
+            <span>${item.quantite}</span>
+            <button data-action="increase" data-id="${item.id}">+</button>
+          </div>
+          <div class="item-total">${formatEUR(item.prix * item.quantite)}</div>
+        </div>
+      `).join('');
+
+      cartCard.innerHTML = `
+        ${itemsHtml}
+        <div class="summary">
+          <span class="label">Total (${getCartCount()} article${getCartCount() > 1 ? 's' : ''})</span>
+          <span class="total">${formatEUR(getCartTotal())}</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="clearBtn">Vider le panier</button>
+          <button class="btn btn-primary" id="checkoutBtn">Passer la commande</button>
+        </div>
+      `;
+
+      document.getElementById('clearBtn').addEventListener('click', () => {
+        clearCart();
+        render();
+      });
+
+      document.getElementById('checkoutBtn').addEventListener('click', () => {
+        alert('Commande simulée — branche cette action sur ta page de paiement.');
+      });
+    }
+
+    document.getElementById('cartCard').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const cart = getCart();
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+
+      if (btn.dataset.action === 'increase') updateCartQuantity(id, item.quantite + 1);
+      if (btn.dataset.action === 'decrease') updateCartQuantity(id, item.quantite - 1);
+      if (btn.dataset.action === 'remove') removeFromCart(id);
+
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
